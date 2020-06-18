@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private AADAppRoleStatelessAuthenticationFilter  aadAuthFilter;
+    private AADAppRoleStatelessAuthenticationFilter aadAuthFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

@@ -53,7 +53,7 @@ public class TodolistController {
         return new ResponseEntity<>(todoList, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('SSO-poc')")
+    @PreAuthorize("hasRole('SSO_poc')")
     @RequestMapping(value = "/api/todolist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addNewTodoItem(@RequestBody TodoItem item) {
         item.setID(todoList.size() + 1);
@@ -64,7 +64,7 @@ public class TodolistController {
     /**
      * HTTP PUT
      */
-    @PreAuthorize("hasRole('ROLE_group1')")
+    @PreAuthorize("hasRole('SSO_poc')")
     @RequestMapping(value = "/api/todolist", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateTodoItem(@RequestBody TodoItem item) {
         final List<TodoItem> find =
