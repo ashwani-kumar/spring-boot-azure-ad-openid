@@ -8,20 +8,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
+@Profile("development")
 public class WebConfig implements Filter,WebMvcConfigurer {
-
-
-
-    @Override
+	
+	@Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
+    	registry
+        .addMapping("/**")
+        .allowedMethods("*")
+        .allowedHeaders("*")
+        .allowedOrigins("*")
+        .allowCredentials(true);
     }
 
     @Override

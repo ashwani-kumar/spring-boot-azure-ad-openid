@@ -7,6 +7,8 @@ package com.example.demo;
 
 import com.microsoft.azure.spring.autoconfigure.aad.UserGroup;
 import com.microsoft.azure.spring.autoconfigure.aad.UserPrincipal;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,11 @@ public class TodolistController {
     private final List<TodoItem> todoList = new ArrayList<>();
 
     public TodolistController() {
-        todoList.add(0, new TodoItem(2398, "anything", "whoever"));
+        todoList.add(0, new TodoItem(2398, "we", "whoever"));
+        todoList.add(0, new TodoItem(2399, "can", "whoever"));
+        todoList.add(0, new TodoItem(2400, "do", "whoever"));
+        todoList.add(0, new TodoItem(2401, "anything", "whoever"));
+        todoList.add(0, new TodoItem(2401, "we want", "whoever"));
     }
 
     @RequestMapping("/home")
@@ -36,6 +42,7 @@ public class TodolistController {
     /**
      * HTTP GET
      */
+    @PreAuthorize("hasRole('ROLE_pheonix')")
     @RequestMapping(value = "/api/todolist/{index}",
             method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getTodoItem(@PathVariable("index") int index) {
@@ -48,12 +55,14 @@ public class TodolistController {
     /**
      * HTTP GET ALL
      */
+    @Autowired
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/api/todolist", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TodoItem>> getAllTodoItems() {
         return new ResponseEntity<>(todoList, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('SSO_poc')")
+    @PreAuthorize("hasRole('ROLE_pheonix')")
     @RequestMapping(value = "/api/todolist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addNewTodoItem(@RequestBody TodoItem item) {
         item.setID(todoList.size() + 1);
@@ -64,7 +73,7 @@ public class TodolistController {
     /**
      * HTTP PUT
      */
-    @PreAuthorize("hasRole('SSO_poc')")
+    @PreAuthorize("hasRole('pheonix')")
     @RequestMapping(value = "/api/todolist", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateTodoItem(@RequestBody TodoItem item) {
         final List<TodoItem> find =
@@ -85,7 +94,7 @@ public class TodolistController {
         final UserPrincipal current = (UserPrincipal) authToken.getPrincipal();
 
         if (current.isMemberOf(
-                new UserGroup("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "group1"))) {
+                new UserGroup("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "pheonix"))) {
             final List<TodoItem> find = todoList.stream().filter(i -> i.getID() == id).collect(Collectors.toList());
             if (!find.isEmpty()) {
                 todoList.remove(todoList.indexOf(find.get(0)));
