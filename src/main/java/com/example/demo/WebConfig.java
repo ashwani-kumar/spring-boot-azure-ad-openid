@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.Enumeration;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -21,7 +23,7 @@ public class WebConfig implements Filter,WebMvcConfigurer {
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
     	registry
-        .addMapping("/**")
+        .addMapping("/api/**")
         .allowedMethods("*")
         .allowedHeaders("*")
         .allowedOrigins("*")
@@ -42,6 +44,12 @@ public class WebConfig implements Filter,WebMvcConfigurer {
       response.addHeader("Access-Control-Expose-Headers", "responseType");
       response.addHeader("Access-Control-Expose-Headers", "observe");
       System.out.println("Request Method: "+request.getMethod());
+      Enumeration<String> en = request.getHeaderNames();
+      while (en.hasMoreElements()) {
+    	  String key = en.nextElement();
+          System.out.println("Value is: " + key);
+          System.out.println("Header is: " + request.getHeader(key));
+      }
       if (!(request.getMethod().equalsIgnoreCase("OPTIONS"))) {
           try {
               chain.doFilter(req, res);
