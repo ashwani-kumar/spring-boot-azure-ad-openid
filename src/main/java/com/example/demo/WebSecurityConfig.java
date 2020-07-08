@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableGlobalMethodSecurity(securedEnabled = true,
         prePostEnabled = true)
@@ -26,32 +27,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	System.out.println("Debugging ");
     	// Stateless session for APIs
-    	http
-    	.cors();
-
-    	http.csrf().disable();
-
-    	http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
-
-    	http.authorizeRequests()
-    	.antMatchers("/home", "/api/**").permitAll()
-    	.anyRequest().authenticated();
-    	http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
-    	
- 
-//    	Add Active Directory filter
+//    	http
+//    	.cors();
+//
+//    	http.csrf().disable();
+//
+//    	http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+//
+//    	http.authorizeRequests()
+//    	.antMatchers("/home").permitAll()
+//    	.antMatchers("/api/**").authenticated()
+//    	.anyRequest().authenticated();
 //    	http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//    	http.cors();
-//        http.authorizeRequests().antMatchers("/home").permitAll();
-//        http.authorizeRequests().antMatchers("/api/**").authenticated();
-//
-//        http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//            .logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);
-//
-//        http.authorizeRequests().anyRequest().permitAll();
-//
-//        //http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-//        http.csrf().disable();
-//        http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    	
+    	http.cors();
+        http.authorizeRequests().antMatchers("/home").permitAll();
+        http.authorizeRequests().antMatchers("/api/**").authenticated();
+
+        http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+            .logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);
+
+        http.authorizeRequests().anyRequest().permitAll();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+        //http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.csrf().disable();
+        http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
