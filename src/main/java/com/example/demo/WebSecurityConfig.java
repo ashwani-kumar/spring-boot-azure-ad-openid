@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         //http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
         http.csrf().disable();
-        http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new JwtTokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+        	.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
