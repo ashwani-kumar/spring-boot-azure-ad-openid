@@ -70,51 +70,11 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 			X509Certificate cert = (X509Certificate) certFactory.generateCertificate(in);
 			PublicKey pubKeyNew = cert.getPublicKey();
 			Claims claims = Jwts.parser().setSigningKey(pubKeyNew).parseClaimsJws(token).getBody();
-
-			String username = claims.getSubject();
-			if (username != null) {
-				@SuppressWarnings("unchecked")
-				List<String> authorities = (List<String>) claims.get("authorities");
-
-				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null,
-						authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-				SecurityContextHolder.getContext().setAuthentication(auth);
-			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			SecurityContextHolder.clearContext();
 		}
 
-//		try {	// exceptions might be thrown in creating the claims if for example the token is expired
-//			
-//			// 4. Validate the token
-//			Claims claims = Jwts.parser()
-//					.setSigningKey(jwtConfig.getSecret().getBytes())
-//					.parseClaimsJws(token)
-//					.getBody();
-//			
-//			String username = claims.getSubject();
-//			if(username != null) {
-//				@SuppressWarnings("unchecked")
-//				List<String> authorities = (List<String>) claims.get("authorities");
-//				
-//				// 5. Create auth object
-//				// UsernamePasswordAuthenticationToken: A built-in object, used by spring to represent the current authenticated / being authenticated user.
-//				// It needs a list of authorities, which has type of GrantedAuthority interface, where SimpleGrantedAuthority is an implementation of that interface
-//				 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-//								 username, null, authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-//				 
-//				 // 6. Authenticate the user
-//				 // Now, user is authenticated
-//				 SecurityContextHolder.getContext().setAuthentication(auth);
-//			}
-//			
-//		} catch (Exception e) {
-//			// In case of failure. Make sure it's clear; so guarantee user won't be authenticated
-//			SecurityContextHolder.clearContext();
-//		}
-//		
-		// go to the next filter in the filter chain
 		chain.doFilter(request, response);
 	}
 
