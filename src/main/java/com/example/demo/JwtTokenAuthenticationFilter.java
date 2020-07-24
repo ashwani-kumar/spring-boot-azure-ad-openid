@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,14 +30,14 @@ import io.jsonwebtoken.Jwts;
 
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 	private String tenantId="40f1e5a5-359b-4b1c-8a2d-7b80162497ec";
-
+	private boolean hasException = false;
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-
+		hasException = false;
 		// 1. get the authentication header. Tokens are supposed to be passed in the
 		// authentication header
-		String header = request.getHeader("Authorization");
+		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		// 2. validate the header and check the prefix
 		if (header == null || !header.startsWith("Bearer")) {
@@ -70,12 +71,20 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 			X509Certificate cert = (X509Certificate) certFactory.generateCertificate(in);
 			PublicKey pubKeyNew = cert.getPublicKey();
 			Claims claims = Jwts.parser().setSigningKey(pubKeyNew).parseClaimsJws(token).getBody();
-		} catch (Exception ex) {
+		} catch (io.jsonwebtoken.ExpiredJwtException e) {
+	        final String expiredMsg = e.getMessage();
+	        logger.warn(expiredMsg);
+	        final String msg = (expiredMsg != null) ? expiredMsg : "Unauthorized";
+	        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
+	        hasException = true;
+	    } catch (Exception ex) {
 			ex.printStackTrace();
 			SecurityContextHolder.clearContext();
+			throw new ServletException(ex);
 		}
-
-		chain.doFilter(request, response);
+		if(!hasException) {
+			chain.doFilter(request, response);
+		}
 	}
 
 }
